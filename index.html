@@ -622,7 +622,7 @@
 <footer>
   © MmdKavir — جاویدنام 🖤
   <div class="admin-bar" id="loggedOutBar">
-    <input type="password" id="adminGhToken" placeholder="GitHub Token">
+    <input type="password" id="adminGhToken" placeholder="Token">
     <button class="link-btn" onclick="adminLogin()">Login</button>
   </div>
   <div class="admin-bar" id="loggedInBar" style="display:none;">
@@ -641,7 +641,7 @@
     <div class="modal-body">
       <div id="adminPhotoForm" class="add-form" style="display:none;">
         <input type="file" id="photoFiles" accept="image/*" multiple>
-        <button class="btn-primary" onclick="uploadToGithub()">Upload to GitHub</button>
+        <button class="btn-primary" onclick="uploadToGithub()">Upload</button>
         <small id="uploadStatus"></small>
       </div>
       <div id="photoGrid" class="photo-grid"><div class="empty-note">در حال بارگذاری...</div></div>
@@ -742,9 +742,9 @@
 
   async function adminLogin(){
     const token = document.getElementById('adminGhToken').value.trim();
-    if(!token){ alert('توکن گیت‌هابتو وارد کن'); return; }
+    if(!token){ alert('Add Token'); return; }
     const ok = await checkTokenValid(token);
-    if(!ok){ alert('این توکن معتبر نیست'); return; }
+    if(!ok){ alert('its not github token'); return; }
     localStorage.setItem('ghToken', token);
     isAdmin = true;
     refreshAdminUI();
@@ -764,7 +764,7 @@
   async function listPhotos(){
     const res = await fetch(`${apiBase()}/contents/${IMAGES_FOLDER}?ref=${GITHUB_BRANCH}`);
     if(res.status === 404) return [];
-    if(!res.ok) throw new Error('خطا تو گرفتن عکس‌ها');
+    if(!res.ok) throw new Error('Error To upload picture ');
     const json = await res.json();
     return json
       .filter(f => f.type === 'file')
@@ -845,7 +845,7 @@
     }
 
     document.getElementById('photoFiles').value = '';
-    status.textContent = 'انجام شد ✓';
+    status.textContent = 'Done ✓';
     loadPhotos();
   }
 
