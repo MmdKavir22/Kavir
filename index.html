@@ -907,7 +907,10 @@
     catch(err){ list.innerHTML = ''; list.appendChild(makeEmptyNote('خطا تو گرفتن لیست', true)); return; }
     if(!games.length){ list.innerHTML = ''; list.appendChild(makeEmptyNote('هنوز بازی‌ای اضافه نشده', true)); return; }
     list.innerHTML = '';
-    games.forEach((game, index) => {
+    const sorted = games
+      .map((game, index) => ({ game, index }))
+      .sort((a, b) => a.game.title.localeCompare(b.game.title, undefined, { sensitivity: 'base' }));
+    sorted.forEach(({ game, index }) => {
       const li = document.createElement('li');
       li.className = 'gh-row';
       const title = document.createElement('span');
