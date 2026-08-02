@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MmdKavir</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Vazirmatn:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0a0a;
+    --bg-soft:#111111;
+    --panel:#141414;
+    --line:#2b2b2b;
+    --line-soft:#1e1e1e;
+    --fg:#ececec;
+    --fg-dim:#8a8a8a;
+    --fg-dimmer:#565656;
+    --white:#ffffff;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--fg);
+    font-family:'Vazirmatn','JetBrains Mono',monospace;
+    min-height:100vh;
+    overflow-x:hidden;
+    position:relative;
+  }
+
+  /* scanline / noise atmosphere */
+  body::before{
+    content:"";
+    position:fixed; inset:0;
+    background:repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,0.018) 0px,
+      rgba(255,255,255,0.018) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    pointer-events:none;
+    z-index:2;
+  }
+  body::after{
+    content:"";
+    position:fixed; inset:0;
+    background:radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.75) 100%);
+    pointer-events:none;
+    z-index:1;
+  }
+
+  .mono{font-family:'JetBrains Mono',monospace;}
+
+  /* ---------- HEADER ---------- */
+  header{
+    position:relative;
+    z-index:3;
+    text-align:center;
+    padding:64px 20px 40px;
+    border-bottom:1px solid var(--line-soft);
+  }
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    letter-spacing:.35em;
+    font-size:11px;
+    color:var(--fg-dimmer);
+    text-transform:uppercase;
+    margin-bottom:18px;
+  }
+  .eyebrow::before{content:"// ";}
+  h1.name{
+    font-size:clamp(42px, 9vw, 96px);
+    font-weight:900;
+    letter-spacing:-.02em;
+    line-height:1;
+    color:var(--white);
+    text-shadow: 0 0 30px rgba(255,255,255,0.12);
+    position:relative;
+    display:inline-block;
+  }
+  .cursor{
+    display:inline-block;
+    width:.5em;
+    background:var(--white);
+    margin-inline-start:6px;
+    animation:blink 1.1s steps(2) infinite;
+  }
+  @keyframes blink{50%{opacity:0;}}
+  .tagline{
+    margin-top:16px;
+    font-size:15px;
+    color:var(--fg-dim);
+    font-family:'JetBrains Mono',monospace;
+    letter-spacing:.02em;
+  }
+  .tagline .sep{color:var(--fg-dimmer); margin:0 10px;}
+
+  /* ---------- MAIN 3-COL GRID ---------- */
+  main{
+    position:relative;
+    z-index:3;
+    max-width:1180px;
+    margin:0 auto;
+    padding:60px 24px;
+    display:grid;
+    grid-template-columns: 1fr 1.3fr 1fr;
+    grid-template-areas: "games about social";
+    gap:28px;
+    align-items:start;
+  }
+  /* named areas guarantee one single row: games / about / social side by side, left-to-right */
+  .col-games{grid-area:games;}
+  .col-about{grid-area:about;}
+  .col-social{grid-area:social;}
+  @media (max-width: 900px){
+    main{
+      grid-template-columns:1fr;
+      grid-template-areas:
+        "about"
+        "games"
+        "social";
+    }
+  }
+
+  .col-title{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    letter-spacing:.25em;
+    text-transform:uppercase;
+    color:var(--fg-dimmer);
+    margin-bottom:18px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .col-title::after{
+    content:"";
+    flex:1;
+    height:1px;
+    background:var(--line);
+  }
+  .col-title.has-icon::after{content:none;}
+  .title-line{flex:1; height:1px; background:var(--line);}
+  .icon-btn{
+    flex-shrink:0;
+    width:26px; height:26px;
+    display:flex; align-items:center; justify-content:center;
+    background:none; border:1px solid var(--line); border-radius:50%;
+    color:var(--fg-dim); cursor:pointer; padding:0;
+    transition:all .2s ease;
+  }
+  .icon-btn:hover{border-color:var(--white); color:var(--white);}
+  .icon-btn svg{width:13px; height:13px;}
+
+  .panel{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:2px;
+    padding:26px;
+    transition:border-color .25s ease, transform .25s ease;
+  }
+  .panel:hover{border-color:#4a4a4a;}
+
+  /* ---- CENTER: ABOUT ---- */
+  .about p{
+    font-size:15.5px;
+    line-height:2;
+    color:var(--fg);
+  }
+  .about p + p{margin-top:14px;}
+  .about b{color:var(--white); font-weight:700;}
+  .tags{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-top:22px;
+  }
+  .tag{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    padding:6px 12px;
+    border:1px solid var(--line);
+    color:var(--fg-dim);
+    border-radius:20px;
+  }
+  .stat-row{
+    display:flex;
+    gap:26px;
+    margin-top:24px;
+    padding-top:20px;
+    border-top:1px solid var(--line-soft);
+  }
+  .stat b{
+    display:block;
+    font-family:'JetBrains Mono',monospace;
+    font-size:26px;
+    color:var(--white);
+    font-weight:800;
+  }
+  .stat span{
+    font-size:11px;
+    color:var(--fg-dimmer);
+    letter-spacing:.05em;
+  }
+
+  /* ---- GAMES (right in RTL = visually right, source order gives it second in DOM but grid handles placement) ---- */
+  .games-list{list-style:none; display:flex; flex-direction:column; gap:12px;}
+  .games-list li{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:14px 16px;
+    border:1px solid var(--line);
+    background:var(--bg-soft);
+    font-size:14.5px;
+    position:relative;
+    overflow:hidden;
+  }
+  .games-list li::before{
+    content:"";
+    position:absolute; inset-inline-start:-100%; top:0; bottom:0; width:100%;
+    background:linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
+    transition:inset-inline-start .5s ease;
+  }
+  .games-list li:hover::before{inset-inline-start:100%;}
+  .games-list li:hover{border-color:var(--white);}
+  .g-idx{font-family:'JetBrains Mono',monospace; color:var(--fg-dimmer); font-size:12px;}
+  .g-name{font-weight:700; flex:1; margin:0 12px;}
+  .g-status{font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--fg-dimmer); letter-spacing:.1em;}
+
+  /* ---- SOCIAL (left) ---- */
+  .social-list{list-style:none; display:flex; flex-direction:row; flex-wrap:wrap; gap:10px;}
+  .social-list li{flex:1 1 0; min-width:110px;}
+  .social-list a{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:16px;
+    height:100%;
+    text-decoration:none;
+    color:var(--fg);
+    border:1px solid var(--line);
+    padding:16px;
+    background:var(--bg-soft);
+    transition:all .2s ease;
+  }
+  .social-list a:hover{
+    background:var(--white);
+    color:var(--bg);
+    border-color:var(--white);
+  }
+  .social-list a:hover .s-handle{color:var(--bg);}
+  .s-top{display:flex; justify-content:space-between; align-items:center; width:100%;}
+  .s-platform{
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;
+    letter-spacing:.15em;
+    text-transform:uppercase;
+    color:var(--fg-dimmer);
+  }
+  .social-list a:hover .s-platform{color:#555;}
+  .s-handle{font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:600; word-break:break-word;}
+  .arrow{font-family:'JetBrains Mono',monospace; font-size:16px;}
+
+  /* ---------- SYSTEM SPECS ---------- */
+  .specs-wrap{
+    position:relative;
+    z-index:3;
+    max-width:1180px;
+    margin:0 auto 90px;
+    padding:0 24px;
+  }
+  .terminal{
+    border:1px solid var(--line);
+    background:var(--bg-soft);
+    border-radius:4px;
+    overflow:hidden;
+  }
+  .term-bar{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:12px 16px;
+    border-bottom:1px solid var(--line);
+    background:#0d0d0d;
+  }
+  .dot{width:10px; height:10px; border-radius:50%; background:var(--fg-dimmer);}
+  .term-title{
+    margin-inline-start:10px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    color:var(--fg-dimmer);
+    letter-spacing:.1em;
+  }
+  .term-body{padding:28px 30px;}
+  .spec-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    column-gap:48px;
+    font-family:'JetBrains Mono',monospace;
+  }
+  @media (max-width:600px){
+    .spec-grid{grid-template-columns:1fr;}
+  }
+  .spec-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    gap:16px;
+    padding:14px 0;
+    border-bottom:1px dashed var(--line);
+    font-size:13.5px;
+    min-width:0;
+  }
+  .spec-key{color:var(--fg-dimmer); white-space:nowrap;}
+  .spec-val{color:var(--white); font-weight:700; text-align:left; overflow-wrap:anywhere;}
+  .term-prompt{
+    margin-top:22px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:13px;
+    color:var(--fg-dim);
+  }
+  .term-prompt::before{content:"$ "; color:var(--fg-dimmer);}
+
+  footer{
+    text-align:center;
+    padding:30px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    color:var(--fg-dimmer);
+    border-top:1px solid var(--line-soft);
+    position:relative;
+    z-index:3;
+    letter-spacing:.05em;
+  }
+
+  /* ---------- MINI BUTTONS (album / game history) ---------- */
+  .col-actions{display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap;}
+  .mini-btn{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    padding:8px 14px;
+    background:var(--bg-soft);
+    border:1px solid var(--line);
+    color:var(--fg);
+    border-radius:20px;
+    cursor:pointer;
+    transition:all .2s ease;
+  }
+  .mini-btn:hover{background:var(--white); color:var(--bg); border-color:var(--white);}
+
+  /* ---------- MODALS ---------- */
+  .modal-overlay{
+    position:fixed; inset:0; z-index:50;
+    background:rgba(0,0,0,0.6);
+    display:none; align-items:center; justify-content:center;
+    padding:20px;
+  }
+  .modal-overlay.open{display:flex;}
+  .modal-box{
+    background:rgba(8,8,8,0.55);
+    -webkit-backdrop-filter: blur(22px) saturate(150%);
+    backdrop-filter: blur(22px) saturate(150%);
+    border:1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.05);
+    width:100%; max-width:720px; max-height:85vh; overflow-y:auto;
+    border-radius:14px;
+  }
+  .modal-head{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:18px 22px; border-bottom:1px solid rgba(255,255,255,0.08);
+    position:sticky; top:0;
+    background:rgba(8,8,8,0.5);
+    -webkit-backdrop-filter: blur(22px) saturate(150%);
+    backdrop-filter: blur(22px) saturate(150%);
+    z-index:1;
+  }
+  .modal-head h3{
+    font-family:'JetBrains Mono',monospace; font-size:14px;
+    letter-spacing:.08em; color:var(--white); font-weight:700;
+  }
+  .modal-close{background:none; border:none; color:var(--fg-dim); font-size:20px; cursor:pointer; line-height:1;}
+  .modal-close:hover{color:var(--white);}
+  .modal-body{padding:22px;}
+
+  .add-form{margin-bottom:20px; padding-bottom:20px; border-bottom:1px dashed var(--line);}
+  .add-form textarea, .add-form input[type=text], .add-form input[type=password], .add-form select{
+    width:100%; background:var(--bg-soft); border:1px solid var(--line); color:var(--fg);
+    font-family:'JetBrains Mono',monospace; font-size:13px; padding:10px;
+    border-radius:4px; margin-bottom:8px;
+  }
+  .add-form textarea{min-height:80px; resize:vertical;}
+  .add-form small{display:block; color:var(--fg-dimmer); font-size:11px; margin-top:2px;}
+  .upload-divider{
+    display:flex; align-items:center; gap:10px; margin:16px 0 10px;
+    font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.1em;
+    color:var(--fg-dimmer); text-transform:uppercase;
+  }
+  .upload-divider::before, .upload-divider::after{content:""; flex:1; height:1px; background:var(--line);}
+  .add-form input[type=file]{
+    width:100%; background:var(--bg-soft); border:1px dashed var(--line); color:var(--fg-dim);
+    font-family:'JetBrains Mono',monospace; font-size:12px; padding:10px; border-radius:4px; margin-bottom:8px;
+  }
+  #uploadStatus{min-height:14px;}
+  .btn-primary{
+    margin-top:6px; font-family:'JetBrains Mono',monospace; font-size:12px; padding:10px 18px;
+    background:var(--white); color:#000; border:none; border-radius:20px; cursor:pointer; font-weight:700;
+  }
+  .btn-primary:hover{opacity:.85;}
+
+  .empty-note{color:var(--fg-dimmer); font-size:13px; text-align:center; padding:30px 0; font-family:'JetBrains Mono',monospace;}
+
+  /* photo grid + lightbox */
+  .photo-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(110px,1fr)); gap:10px;}
+  .photo-thumb{position:relative; aspect-ratio:1; border:1px solid var(--line); overflow:hidden; border-radius:4px; cursor:pointer; background:var(--bg-soft);}
+  .photo-thumb img{width:100%; height:100%; object-fit:cover; display:block; transition:transform .3s ease;}
+  .photo-thumb:hover img{transform:scale(1.08);}
+  .photo-del{
+    position:absolute; top:4px; left:4px; background:rgba(0,0,0,0.7); color:#fff;
+    border:none; width:22px; height:22px; border-radius:50%; font-size:12px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .photo-del:hover{background:#fff; color:#000;}
+
+  .lightbox{
+    position:fixed; inset:0; z-index:60; background:rgba(0,0,0,0.95);
+    display:none; align-items:center; justify-content:center; padding:20px;
+  }
+  .lightbox.open{display:flex;}
+  .lightbox img{max-width:92vw; max-height:88vh; border:1px solid var(--line); border-radius:4px;}
+  .lightbox-close{
+    position:absolute; top:20px; left:20px; background:none; border:1px solid var(--line);
+    color:#fff; width:40px; height:40px; border-radius:50%; font-size:18px; cursor:pointer;
+  }
+  .lightbox-close:hover{background:#fff; color:#000;}
+
+  /* games history */
+  .gh-list{list-style:none; display:flex; flex-direction:column; gap:10px;}
+  .gh-row{
+    display:flex; justify-content:space-between; align-items:center; gap:12px;
+    padding:12px 14px; border:1px solid var(--line); background:var(--bg-soft); border-radius:4px;
+  }
+  .gh-title{font-weight:700; font-size:14px;}
+  .badge{font-family:'JetBrains Mono',monospace; font-size:10px; padding:5px 10px; border-radius:20px; white-space:nowrap; letter-spacing:.03em;}
+  .badge.completed{background:#fff; color:#000;}
+  .badge.in_progress{border:1px solid #fff; color:#fff;}
+  .badge.dropped{border:1px solid var(--fg-dimmer); color:var(--fg-dim);}
+  .badge.not_played{border:1px dashed var(--fg-dimmer); color:var(--fg-dimmer);}
+  .gh-del{background:none; border:none; color:var(--fg-dimmer); cursor:pointer; font-size:15px;}
+  .gh-del:hover{color:#fff;}
+
+  /* admin login bar in footer */
+  .admin-bar{margin-top:14px; display:flex; justify-content:center; gap:8px; align-items:center; flex-wrap:wrap;}
+  .admin-bar input{
+    background:var(--bg-soft); border:1px solid var(--line); color:var(--fg);
+    font-family:'JetBrains Mono',monospace; font-size:11px; padding:7px 9px; border-radius:4px; width:140px;
+  }
+  .link-btn{background:none; border:none; color:var(--fg-dimmer); font-family:'JetBrains Mono',monospace; font-size:11px; cursor:pointer; text-decoration:underline;}
+  .link-btn:hover{color:#fff;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">profile.init</div>
+  <h1 class="name">MmdKavir<span class="cursor">&nbsp;</span></h1>
+  <div class="tagline">GAMER<span class="sep">/</span>DEVELOPER<span class="sep">/</span>19</div>
+</header>
+
+<main>
+
+  <!-- SOCIAL — left column -->
+  <section class="col-social">
+    <div class="col-title">Socials</div>
+    <ul class="social-list">
+      <li>
+        <a href="https://youtube.com/@MmdKavir222" target="_blank" rel="noopener">
+          <div class="s-top">
+            <span class="s-platform">YouTube</span>
+            <span class="arrow">↗</span>
+          </div>
+          <span class="s-handle">MmdKavir222</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://instagram.com/kavirkobra19" target="_blank" rel="noopener">
+          <div class="s-top">
+            <span class="s-platform">Instagram</span>
+            <span class="arrow">↗</span>
+          </div>
+          <span class="s-handle">kavirkobra19</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://www.aparat.com/MmdKavir22" target="_blank" rel="noopener">
+          <div class="s-top">
+            <span class="s-platform">Aparat</span>
+            <span class="arrow">↗</span>
+          </div>
+          <span class="s-handle">MmdKavir22</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://discord.gg/Jjw46K8Q5B" target="_blank" rel="noopener">
+          <div class="s-top">
+            <span class="s-platform">Discord</span>
+            <span class="arrow">↗</span>
+          </div>
+          <span class="s-handle">Join Server</span>
+        </a>
+      </li>
+    </ul>
+  </section>
+
+  <!-- ABOUT — center column -->
+  <section class="panel about col-about">
+    <div class="col-title">About Me</div>
+    <p>چه خبر 👋 من <b>ممد کویر</b>م، ۱۹ سالمه، تولدمم <b>۱۶ آوریل</b>.</p>
+    <p>بیشتر وقتم بین گیم زدن و کد نوشتن می‌گذره؛ بعضی وقتا هم با کمک AI کد می‌زنم که کارا سریع‌تر جلو بره. تو وقت آزادم یا گیم می‌زنم، یا انیمه/فیلم می‌بینم، یا با رفیقام گپ می‌زنم :)</p>
+
+    <div class="tags">
+      <span class="tag">Gaming</span>
+      <span class="tag">Coding</span>
+      <span class="tag">AI-Assisted Dev</span>
+      <span class="tag">Anime</span>
+      <span class="tag">Movies</span>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat">
+        <b>19</b>
+        <span>age</span>
+      </div>
+      <div class="stat">
+        <b>16/04</b>
+        <span>Birthday</span>
+      </div>
+      <div class="stat">
+        <b>04</b>
+        <span>Platforms</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- GAMES — right column -->
+  <section class="col-games">
+    <div class="col-title has-icon">
+      <span>Games</span>
+      <span class="title-line"></span>
+      <button class="icon-btn" title="Pictures" onclick="openModal('albumModal')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="16" rx="2"></rect>
+          <circle cx="8.5" cy="9.5" r="1.6"></circle>
+          <path d="M21 16l-5.5-5.5a1.5 1.5 0 0 0-2.1 0L4 20"></path>
+        </svg>
+      </button>
+      <button class="icon-btn" title="Another Games" onclick="openModal('ghModal')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M7 8.5h9a4 4 0 0 1 4 4.6l-.4 2.7a2.8 2.8 0 0 1-5 1.3L13.5 15h-3l-1.1 2.1a2.8 2.8 0 0 1-5-1.3l-.4-2.7A4 4 0 0 1 7 8.5z"></path>
+          <path d="M8.2 11v2.4M7 12.2h2.4"></path>
+          <circle cx="15.2" cy="11.3" r="0.9"></circle>
+          <circle cx="17.2" cy="13.3" r="0.9"></circle>
+        </svg>
+      </button>
+    </div>
+    <ul class="games-list">
+      <li>
+        <span class="g-idx">01</span>
+        <span class="g-name">CS 2</span>
+        <span class="g-status">ACTIVE</span>
+      </li>
+      <li>
+        <span class="g-idx">02</span>
+        <span class="g-name">Minecraft</span>
+        <span class="g-status">ACTIVE</span>
+      </li>
+      <li>
+        <span class="g-idx">03</span>
+        <span class="g-name">Sea of Thieves</span>
+        <span class="g-status">ACTIVE</span>
+      </li>
+      <li>
+        <span class="g-idx">04</span>
+        <span class="g-name">Wuthering Waves</span>
+        <span class="g-status">ACTIVE</span>
+      </li>
+      <li>
+        <span class="g-idx">05</span>
+        <span class="g-name">PUBG BATTLEGROUNDS</span>
+        <span class="g-status">ACTIVE</span>
+      </li>
+    </ul>
+  </section>
+
+</main>
+
+<!-- SYSTEM SPECS -->
+<div class="specs-wrap">
+  <div class="col-title">LIFE</div>
+  <div class="terminal">
+    <div class="term-bar">
+      <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      <span class="term-title">kavir - system</span>
+    </div>
+    <div class="term-body">
+      <div class="spec-grid">
+        <div class="spec-row"><span class="spec-key">CPU</span><span class="spec-val">Core i5-13400F</span></div>
+        <div class="spec-row"><span class="spec-key">GPU</span><span class="spec-val">RX 580</span></div>
+        <div class="spec-row"><span class="spec-key">PSU</span><span class="spec-val">750W CoolerMaster White</span></div>
+        <div class="spec-row"><span class="spec-key">CPU Cooler</span><span class="spec-val">AG400</span></div>
+        <div class="spec-row"><span class="spec-key">Storage</span><span class="spec-val">1TB SSD SATA</span></div>
+        <div class="spec-row"><span class="spec-key">RAM</span><span class="spec-val">16GB DDR4 3200MHz</span></div>
+      </div>
+      <div class="term-prompt">status: No Money</div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  © MmdKavir — جاویدنام 🖤
+  <div class="admin-bar" id="loggedOutBar">
+    <input type="password" id="adminGhToken" placeholder="GitHub Token">
+    <button class="link-btn" onclick="adminLogin()">Login</button>
+  </div>
+  <div class="admin-bar" id="loggedInBar" style="display:none;">
+    <span style="color:var(--fg-dim);">Admin Panel ✓</span>
+    <button class="link-btn" onclick="adminLogout()">Logout</button>
+  </div>
+</footer>
+
+<!-- ALBUM MODAL -->
+<div class="modal-overlay" id="albumModal" onclick="if(event.target===this) closeModal('albumModal')">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3>Pictures</h3>
+      <button class="modal-close" onclick="closeModal('albumModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="adminPhotoForm" class="add-form" style="display:none;">
+        <input type="file" id="photoFiles" accept="image/*" multiple>
+        <button class="btn-primary" onclick="uploadToGithub()">Upload to GitHub</button>
+        <small id="uploadStatus"></small>
+      </div>
+      <div id="photoGrid" class="photo-grid"><div class="empty-note">در حال بارگذاری...</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- GAME HISTORY MODAL -->
+<div class="modal-overlay" id="ghModal" onclick="if(event.target===this) closeModal('ghModal')">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3>Another Games</h3>
+      <button class="modal-close" onclick="closeModal('ghModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="adminGameForm" class="add-form" style="display:none;">
+        <input type="text" id="gameTitle" placeholder="Game Name">
+        <select id="gameStatus">
+          <option value="completed">completed</option>
+          <option value="in_progress">Already Playing</option>
+          <option value="dropped">Dropped</option>
+          <option value="not_played">Not Played</option>
+        </select>
+        <button class="btn-primary" onclick="addGame()">Add Game</button>
+      </div>
+      <ul id="gameList" class="gh-list"><li class="empty-note">در حال بارگذاری...</li></ul>
+    </div>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="if(event.target===this) closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img id="lightboxImg" src="" alt="">
+</div>
+
+<script>
+  // ====== GitHub repo settings — replace with your own username/repo ======
+  const GITHUB_OWNER = "MmdKavir22";
+  const GITHUB_REPO = "Kavir";
+  const GITHUB_BRANCH = "main";
+  const IMAGES_FOLDER = "images";
+  const GAMES_FILE_PATH = "data/games.json";
+
+  let isAdmin = false;
+
+  function apiBase(){ return `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}`; }
+  function getToken(){ return localStorage.getItem('ghToken') || ''; }
+
+  function b64EncodeUnicode(str){
+    return btoa(unescape(encodeURIComponent(str)));
+  }
+  function b64DecodeUnicode(str){
+    return decodeURIComponent(escape(atob(str.replace(/\n/g, ''))));
+  }
+
+  function openModal(id){
+    document.getElementById(id).classList.add('open');
+    if(id === 'albumModal') loadPhotos();
+    if(id === 'ghModal') loadGames();
+  }
+  function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+  function openLightbox(url){
+    document.getElementById('lightboxImg').src = url;
+    document.getElementById('lightbox').classList.add('open');
+  }
+  function closeLightbox(){
+    document.getElementById('lightbox').classList.remove('open');
+    document.getElementById('lightboxImg').src = '';
+  }
+  document.addEventListener('keydown', e => {
+    if(e.key === 'Escape'){
+      closeLightbox();
+      closeModal('albumModal');
+      closeModal('ghModal');
+    }
+  });
+
+  // ---------- ADMIN (gated purely by a valid GitHub token) ----------
+  function refreshAdminUI(){
+    document.getElementById('loggedOutBar').style.display = isAdmin ? 'none' : 'flex';
+    document.getElementById('loggedInBar').style.display = isAdmin ? 'flex' : 'none';
+    document.getElementById('adminPhotoForm').style.display = isAdmin ? 'block' : 'none';
+    document.getElementById('adminGameForm').style.display = isAdmin ? 'block' : 'none';
+    loadPhotos();
+    loadGames();
+  }
+
+  async function checkTokenValid(token){
+    if(!token) return false;
+    try{
+      const res = await fetch('https://api.github.com/user', {
+        headers: { 'Authorization': `token ${token}` }
+      });
+      return res.ok;
+    } catch(e){ return false; }
+  }
+
+  async function adminLogin(){
+    const token = document.getElementById('adminGhToken').value.trim();
+    if(!token){ alert('توکن گیت‌هابتو وارد کن'); return; }
+    const ok = await checkTokenValid(token);
+    if(!ok){ alert('این توکن معتبر نیست'); return; }
+    localStorage.setItem('ghToken', token);
+    isAdmin = true;
+    refreshAdminUI();
+  }
+  function adminLogout(){
+    localStorage.removeItem('ghToken');
+    isAdmin = false;
+    refreshAdminUI();
+  }
+  (async () => {
+    const saved = getToken();
+    isAdmin = saved ? await checkTokenValid(saved) : false;
+    refreshAdminUI();
+  })();
+
+  // ---------- PHOTOS (real files inside the /images folder of the repo) ----------
+  async function listPhotos(){
+    const res = await fetch(`${apiBase()}/contents/${IMAGES_FOLDER}?ref=${GITHUB_BRANCH}`);
+    if(res.status === 404) return [];
+    if(!res.ok) throw new Error('خطا تو گرفتن عکس‌ها');
+    const json = await res.json();
+    return json
+      .filter(f => f.type === 'file')
+      .map(f => ({ name: f.name, url: f.download_url, sha: f.sha, path: f.path }))
+      .reverse();
+  }
+
+  async function loadPhotos(){
+    const grid = document.getElementById('photoGrid');
+    let photos = [];
+    try{ photos = await listPhotos(); }
+    catch(err){ grid.innerHTML = ''; grid.appendChild(makeEmptyNote('خطا تو گرفتن عکس‌ها')); return; }
+    if(!photos.length){ grid.innerHTML = ''; grid.appendChild(makeEmptyNote('هنوز عکسی اضافه نشده')); return; }
+    grid.innerHTML = '';
+    photos.forEach(photo => {
+      const div = document.createElement('div');
+      div.className = 'photo-thumb';
+      const img = document.createElement('img');
+      img.src = photo.url;
+      img.loading = 'lazy';
+      img.alt = '';
+      img.addEventListener('click', () => openLightbox(photo.url));
+      div.appendChild(img);
+      if(isAdmin){
+        const delBtn = document.createElement('button');
+        delBtn.className = 'photo-del';
+        delBtn.title = 'حذف';
+        delBtn.textContent = '✕';
+        delBtn.addEventListener('click', e => { e.stopPropagation(); deletePhoto(photo.path, photo.sha); });
+        div.appendChild(delBtn);
+      }
+      grid.appendChild(div);
+    });
+  }
+
+  function fileToBase64(file){
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result.split(',')[1]);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function uploadToGithub(){
+    const status = document.getElementById('uploadStatus');
+    const token = getToken();
+    if(!token){ status.textContent = 'اول از پایین صفحه با توکنت وارد شو'; return; }
+
+    const files = document.getElementById('photoFiles').files;
+    if(!files.length){ status.textContent = 'یه عکس انتخاب کن'; return; }
+
+    for(let i = 0; i < files.length; i++){
+      const file = files[i];
+      status.textContent = `در حال آپلود ${i + 1} از ${files.length}...`;
+      try{
+        const base64 = await fileToBase64(file);
+        const safeName = Date.now() + '-' + i + '-' + file.name.replace(/[^a-zA-Z0-9.\-_]/g, '_');
+        const path = `${IMAGES_FOLDER}/${safeName}`;
+        const res = await fetch(`${apiBase()}/contents/${path}`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `token ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            message: `add photo ${safeName}`,
+            content: base64,
+            branch: GITHUB_BRANCH
+          })
+        });
+        const json = await res.json();
+        if(!res.ok){ throw new Error(json.message || 'خطای گیت‌هاب'); }
+      } catch(err){
+        status.textContent = 'خطا: ' + err.message;
+        return;
+      }
+    }
+
+    document.getElementById('photoFiles').value = '';
+    status.textContent = 'انجام شد ✓';
+    loadPhotos();
+  }
+
+  async function deletePhoto(path, sha){
+    if(!confirm('این عکس حذف بشه؟')) return;
+    const token = getToken();
+    try{
+      const res = await fetch(`${apiBase()}/contents/${path}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `token ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ message: `delete photo ${path}`, sha, branch: GITHUB_BRANCH })
+      });
+      if(!res.ok){ const j = await res.json(); throw new Error(j.message || 'خطا در حذف'); }
+    } catch(err){ alert('حذف نشد: ' + err.message); return; }
+    loadPhotos();
+  }
+
+  // ---------- GAMES (a single data/games.json file in the repo) ----------
+  const statusLabel = {
+    completed: 'completed',
+    in_progress: 'Already Playing',
+    dropped: 'Dropped',
+    not_played: 'not played'
+  };
+
+  async function fetchGamesFile(){
+    const res = await fetch(`${apiBase()}/contents/${GAMES_FILE_PATH}?ref=${GITHUB_BRANCH}`);
+    if(res.status === 404) return { games: [], sha: null };
+    if(!res.ok) throw new Error('خطا در خواندن لیست بازی‌ها');
+    const json = await res.json();
+    let games = [];
+    try{ games = JSON.parse(b64DecodeUnicode(json.content)); } catch(e){ games = []; }
+    return { games, sha: json.sha };
+  }
+
+  async function saveGamesFile(games, sha){
+    const token = getToken();
+    const body = {
+      message: 'update games list',
+      content: b64EncodeUnicode(JSON.stringify(games, null, 2)),
+      branch: GITHUB_BRANCH
+    };
+    if(sha) body.sha = sha;
+    const res = await fetch(`${apiBase()}/contents/${GAMES_FILE_PATH}`, {
+      method: 'PUT',
+      headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    if(!res.ok){ const j = await res.json(); throw new Error(j.message || 'خطا در ذخیره'); }
+  }
+
+  async function loadGames(){
+    const list = document.getElementById('gameList');
+    let games = [];
+    try{ ({ games } = await fetchGamesFile()); }
+    catch(err){ list.innerHTML = ''; list.appendChild(makeEmptyNote('خطا تو گرفتن لیست', true)); return; }
+    if(!games.length){ list.innerHTML = ''; list.appendChild(makeEmptyNote('هنوز بازی‌ای اضافه نشده', true)); return; }
+    list.innerHTML = '';
+    games.forEach((game, index) => {
+      const li = document.createElement('li');
+      li.className = 'gh-row';
+      const title = document.createElement('span');
+      title.className = 'gh-title';
+      title.textContent = game.title;
+      const badge = document.createElement('span');
+      badge.className = 'badge ' + game.status;
+      badge.textContent = statusLabel[game.status] || game.status;
+      li.appendChild(title);
+      li.appendChild(badge);
+      if(isAdmin){
+        const delBtn = document.createElement('button');
+        delBtn.className = 'gh-del';
+        delBtn.title = 'delete';
+        delBtn.textContent = '✕';
+        delBtn.addEventListener('click', () => deleteGame(index));
+        li.appendChild(delBtn);
+      }
+      list.appendChild(li);
+    });
+  }
+
+  async function addGame(){
+    const title = document.getElementById('gameTitle').value.trim();
+    const status = document.getElementById('gameStatus').value;
+    if(!title) return;
+    try{
+      const { games, sha } = await fetchGamesFile();
+      games.push({ title, status });
+      await saveGamesFile(games, sha);
+    } catch(err){ alert('اضافه نشد: ' + err.message); return; }
+    document.getElementById('gameTitle').value = '';
+    loadGames();
+  }
+
+  async function deleteGame(index){
+    if(!confirm('این بازی حذف بشه؟')) return;
+    try{
+      const { games, sha } = await fetchGamesFile();
+      games.splice(index, 1);
+      await saveGamesFile(games, sha);
+    } catch(err){ alert('حذف نشد: ' + err.message); return; }
+    loadGames();
+  }
+
+  function makeEmptyNote(text, isLi){
+    const el = document.createElement(isLi ? 'li' : 'div');
+    el.className = 'empty-note';
+    el.textContent = text;
+    return el;
+  }
+</script>
+
+</body>
+</html>
