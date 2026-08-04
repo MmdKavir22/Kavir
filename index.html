@@ -460,6 +460,73 @@
   }
   .link-btn{background:none; border:none; color:var(--fg-dimmer); font-family:'JetBrains Mono',monospace; font-size:11px; cursor:pointer; text-decoration:underline;}
   .link-btn:hover{color:#fff;}
+
+  /* ---------- LIKE BUTTON ---------- */
+  .like-wrap{
+    display:flex; flex-direction:column; align-items:center; gap:8px;
+    margin:36px auto 0; position:relative; z-index:3; width:fit-content;
+  }
+  .like-btn{
+    width:56px; height:56px; border-radius:50%;
+    background:var(--bg-soft); border:1px solid var(--line);
+    color:var(--fg-dim); cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition:all .2s ease;
+  }
+  .like-btn svg{width:22px; height:22px;}
+  .like-btn:hover{border-color:var(--white); color:var(--white); transform:scale(1.05);}
+  .like-btn.liked{background:var(--white); color:#000; border-color:var(--white);}
+  .like-count{font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--fg-dim); letter-spacing:.05em;}
+
+  /* ---------- COMMENTS SECTION ---------- */
+  .comments-wrap{
+    position:relative; z-index:3; max-width:720px; margin:70px auto 90px; padding:0 24px;
+  }
+  .comment-form{
+    background:var(--panel); border:1px solid var(--line); border-radius:8px;
+    padding:24px; margin-bottom:28px;
+  }
+  .comment-form input[type=text], .comment-form textarea{
+    width:100%; background:var(--bg-soft); border:1px solid var(--line); color:var(--fg);
+    font-family:'Vazirmatn','JetBrains Mono',monospace; font-size:14px; padding:12px;
+    border-radius:6px; margin-bottom:10px;
+  }
+  .comment-form textarea{min-height:90px; resize:vertical;}
+  .comment-checkbox{
+    display:flex; align-items:center; gap:8px; margin-bottom:14px;
+    font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--fg-dim);
+  }
+  .comment-checkbox input{width:auto; margin:0;}
+  #commentStatus{display:block; margin-top:8px; font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--fg-dimmer);}
+
+  .comment-card{
+    border:1px solid var(--line); background:var(--bg-soft); border-radius:6px;
+    padding:16px 18px; margin-bottom:14px;
+  }
+  .comment-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;}
+  .comment-name{font-weight:700; font-size:14px; color:var(--white);}
+  .comment-like-btn{
+    display:flex; align-items:center; gap:6px; background:none; border:1px solid var(--line);
+    color:var(--fg-dim); font-family:'JetBrains Mono',monospace; font-size:11px;
+    padding:5px 10px; border-radius:20px; cursor:pointer;
+  }
+  .comment-like-btn:hover{border-color:var(--white); color:var(--white);}
+  .comment-like-btn svg{width:11px; height:11px;}
+  .comment-text{font-size:14px; line-height:1.9; color:var(--fg);}
+  .comment-reply{
+    margin-top:12px; padding:12px 14px; border-inline-start:2px solid var(--line);
+    background:rgba(255,255,255,0.03); font-size:13px; line-height:1.8; color:var(--fg-dim);
+  }
+  .comment-reply b{color:var(--white);}
+
+  /* admin comment moderation */
+  .admin-comment-form{
+    background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:20px; margin-bottom:24px;
+  }
+  .admin-comment-form textarea{
+    width:100%; background:var(--bg-soft); border:1px solid var(--line); color:var(--fg);
+    font-family:'JetBrains Mono',monospace; font-size:13px; padding:10px; border-radius:4px; margin-bottom:8px; min-height:60px;
+  }
 </style>
 </head>
 <body>
@@ -619,6 +686,42 @@
   </div>
 </div>
 
+<!-- LIKE BUTTON -->
+<div class="like-wrap">
+  <button class="like-btn" id="likeBtn" onclick="handleLike()" title="Like">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M7 11h3v9H7a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2z"></path>
+      <path d="M10 11l2.5-6.5a1.8 1.8 0 0 1 3.3.3l.7 3.2h3.2a2 2 0 0 1 1.9 2.7l-2 6a2 2 0 0 1-1.9 1.3H10v-7z"></path>
+    </svg>
+  </button>
+  <span class="like-count" id="likeCount">—</span>
+</div>
+
+<!-- COMMENTS -->
+<div class="comments-wrap">
+  <div class="col-title">Comments</div>
+
+  <div class="comment-form">
+    <input type="text" id="commentName" placeholder="اسمت">
+    <textarea id="commentText" placeholder="نظرت..."></textarea>
+    <label class="comment-checkbox">
+      <input type="checkbox" id="commentPublic" checked>
+      به بقیه هم نشون داده بشه (در صورت تایید من)
+    </label>
+    <button class="btn-primary" onclick="submitComment()">ارسال نظر</button>
+    <small id="commentStatus"></small>
+  </div>
+
+  <div id="adminCommentForm" class="admin-comment-form" style="display:none;">
+    <input type="text" id="acName" placeholder="اسم">
+    <textarea id="acText" placeholder="متن نظر"></textarea>
+    <textarea id="acReply" placeholder="جواب من (اختیاری)"></textarea>
+    <button class="btn-primary" onclick="addPublicComment()">اضافه‌کردن به نظرات عمومی</button>
+  </div>
+
+  <div id="commentList"><div class="empty-note">در حال بارگذاری...</div></div>
+</div>
+
 <footer>
   © MmdKavir — جاویدنام 🖤
   <div class="admin-bar" id="loggedOutBar">
@@ -685,6 +788,14 @@
   const GITHUB_BRANCH = "main";
   const IMAGES_FOLDER = "images";
   const GAMES_FILE_PATH = "data/games.json";
+  const COMMENTS_FILE_PATH = "data/comments.json";
+
+  // ====== Web3Forms — paste the Access Key you got from web3forms.com ======
+  const WEB3FORMS_ACCESS_KEY = "b4e0b613-8dc4-4ce6-b775-eac6c5d54fb9";
+
+  // ====== CountAPI (no signup needed) — a unique namespace/key for this site's like counter ======
+  const COUNTAPI_NAMESPACE = "mmdkavir-site-9f21";
+  const COUNTAPI_KEY = "likes";
 
   let isAdmin = false;
 
@@ -726,8 +837,10 @@
     document.getElementById('loggedInBar').style.display = isAdmin ? 'flex' : 'none';
     document.getElementById('adminPhotoForm').style.display = isAdmin ? 'block' : 'none';
     document.getElementById('adminGameForm').style.display = isAdmin ? 'block' : 'none';
+    document.getElementById('adminCommentForm').style.display = isAdmin ? 'block' : 'none';
     loadPhotos();
     loadGames();
+    loadComments();
   }
 
   async function checkTokenValid(token){
@@ -961,6 +1074,216 @@
     el.className = 'empty-note';
     el.textContent = text;
     return el;
+  }
+
+  // ---------- LIKE BUTTON (CountAPI — no signup, no key) ----------
+  const COUNTAPI_BASE = 'https://countapi.mileshilliard.com/api/v1';
+  const LIKE_KEY = 'mmdkavir22-kavir-site-like-v1';
+
+  async function loadLikeCount(){
+    const countEl = document.getElementById('likeCount');
+    try{
+      const res = await fetch(`${COUNTAPI_BASE}/get/${LIKE_KEY}`);
+      if(res.ok){ const j = await res.json(); countEl.textContent = j.value; }
+      else { countEl.textContent = '0'; }
+    } catch(e){ countEl.textContent = '0'; }
+  }
+
+  async function handleLike(){
+    const btn = document.getElementById('likeBtn');
+    if(localStorage.getItem('hasLiked') === '1') return;
+    try{
+      const res = await fetch(`${COUNTAPI_BASE}/hit/${LIKE_KEY}`);
+      const j = await res.json();
+      document.getElementById('likeCount').textContent = j.value;
+      localStorage.setItem('hasLiked', '1');
+      btn.classList.add('liked');
+    } catch(e){ /* silently ignore */ }
+  }
+
+  async function loadCommentLikeCount(id, btn){
+    try{
+      const res = await fetch(`${COUNTAPI_BASE}/get/mmdkavir22-kavir-comment-like-${id}`);
+      const j = res.ok ? await res.json() : { value: 0 };
+      btn.querySelector('span').textContent = j.value || 0;
+    } catch(e){ btn.querySelector('span').textContent = '0'; }
+  }
+
+  async function likeCommentClick(id, btn){
+    const liked = JSON.parse(localStorage.getItem('likedComments') || '[]');
+    if(liked.includes(id)) return;
+    try{
+      const res = await fetch(`${COUNTAPI_BASE}/hit/mmdkavir22-kavir-comment-like-${id}`);
+      const j = await res.json();
+      btn.querySelector('span').textContent = j.value;
+      liked.push(id);
+      localStorage.setItem('likedComments', JSON.stringify(liked));
+    } catch(e){ /* silently ignore */ }
+  }
+
+  (function initLike(){
+    loadLikeCount();
+    if(localStorage.getItem('hasLiked') === '1'){
+      document.getElementById('likeBtn').classList.add('liked');
+    }
+  })();
+
+  // ---------- COMMENT SUBMISSION (Web3Forms — public-safe access key, emails you) ----------
+  async function submitComment(){
+    const status = document.getElementById('commentStatus');
+    const name = document.getElementById('commentName').value.trim();
+    const text = document.getElementById('commentText').value.trim();
+    const isPublicWish = document.getElementById('commentPublic').checked;
+    if(!name || !text){ status.textContent = 'اسم و متن رو پر کن'; return; }
+    status.textContent = 'در حال ارسال...';
+    try{
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          access_key: WEB3FORMS_ACCESS_KEY,
+          subject: 'New comment on your site',
+          name: name,
+          message: text,
+          show_publicly: isPublicWish ? 'Yes' : 'No'
+        })
+      });
+      const json = await res.json();
+      if(!json.success) throw new Error(json.message || 'خطا در ارسال');
+      status.textContent = 'نظرت ارسال شد ✓ ممنون!';
+      document.getElementById('commentName').value = '';
+      document.getElementById('commentText').value = '';
+    } catch(err){ status.textContent = 'ارسال نشد: ' + err.message; }
+  }
+
+  // ---------- PUBLIC COMMENTS (a data/comments.json file the admin curates from their inbox) ----------
+  async function fetchCommentsFile(){
+    const res = await fetch(`${apiBase()}/contents/${COMMENTS_FILE_PATH}?ref=${GITHUB_BRANCH}`);
+    if(res.status === 404) return { comments: [], sha: null };
+    if(!res.ok) throw new Error('خطا در خواندن نظرات');
+    const json = await res.json();
+    let comments = [];
+    try{ comments = JSON.parse(b64DecodeUnicode(json.content)); } catch(e){ comments = []; }
+    return { comments, sha: json.sha };
+  }
+
+  async function saveCommentsFile(comments, sha){
+    const token = getToken();
+    const body = {
+      message: 'update comments',
+      content: b64EncodeUnicode(JSON.stringify(comments, null, 2)),
+      branch: GITHUB_BRANCH
+    };
+    if(sha) body.sha = sha;
+    const res = await fetch(`${apiBase()}/contents/${COMMENTS_FILE_PATH}`, {
+      method: 'PUT',
+      headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    if(!res.ok){ const j = await res.json(); throw new Error(j.message || 'خطا در ذخیره'); }
+  }
+
+  async function loadComments(){
+    const list = document.getElementById('commentList');
+    let comments = [];
+    try{ ({ comments } = await fetchCommentsFile()); }
+    catch(err){ list.innerHTML = ''; list.appendChild(makeEmptyNote('خطا تو گرفتن نظرات')); return; }
+    if(!comments.length){ list.innerHTML = ''; list.appendChild(makeEmptyNote('هنوز نظری ثبت نشده')); return; }
+    list.innerHTML = '';
+    [...comments].reverse().forEach(c => {
+      const card = document.createElement('div');
+      card.className = 'comment-card';
+
+      const head = document.createElement('div');
+      head.className = 'comment-head';
+      const name = document.createElement('span');
+      name.className = 'comment-name';
+      name.textContent = c.name;
+
+      const likeBtn = document.createElement('button');
+      likeBtn.className = 'comment-like-btn';
+      likeBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 11h3v9H7a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2z"></path><path d="M10 11l2.5-6.5a1.8 1.8 0 0 1 3.3.3l.7 3.2h3.2a2 2 0 0 1 1.9 2.7l-2 6a2 2 0 0 1-1.9 1.3H10v-7z"></path></svg><span>0</span>';
+      likeBtn.addEventListener('click', () => likeCommentClick(c.id, likeBtn));
+
+      head.appendChild(name);
+      head.appendChild(likeBtn);
+      card.appendChild(head);
+
+      const text = document.createElement('div');
+      text.className = 'comment-text';
+      text.textContent = c.text;
+      card.appendChild(text);
+
+      if(c.reply){
+        const reply = document.createElement('div');
+        reply.className = 'comment-reply';
+        const b = document.createElement('b');
+        b.textContent = 'MmdKavir: ';
+        reply.appendChild(b);
+        reply.appendChild(document.createTextNode(c.reply));
+        card.appendChild(reply);
+      }
+
+      if(isAdmin){
+        const replyBox = document.createElement('textarea');
+        replyBox.placeholder = 'جواب بده...';
+        replyBox.value = c.reply || '';
+        replyBox.style.cssText = 'width:100%;margin-top:10px;background:var(--bg-soft);border:1px solid var(--line);color:var(--fg);font-family:JetBrains Mono,monospace;font-size:12px;padding:8px;border-radius:4px;min-height:50px;';
+        const saveBtn = document.createElement('button');
+        saveBtn.className = 'btn-primary';
+        saveBtn.style.marginTop = '6px';
+        saveBtn.textContent = 'ذخیره جواب';
+        saveBtn.addEventListener('click', () => saveReply(c.id, replyBox.value));
+
+        const delBtn = document.createElement('button');
+        delBtn.className = 'gh-del';
+        delBtn.style.marginTop = '6px';
+        delBtn.style.display = 'block';
+        delBtn.textContent = 'حذف این نظر ✕';
+        delBtn.addEventListener('click', () => deleteComment(c.id));
+
+        card.appendChild(replyBox);
+        card.appendChild(saveBtn);
+        card.appendChild(delBtn);
+      }
+
+      list.appendChild(card);
+      loadCommentLikeCount(c.id, likeBtn);
+    });
+  }
+
+  async function addPublicComment(){
+    const name = document.getElementById('acName').value.trim();
+    const text = document.getElementById('acText').value.trim();
+    if(!name || !text) return;
+    try{
+      const { comments, sha } = await fetchCommentsFile();
+      comments.push({ id: Date.now(), name, text, reply: '' });
+      await saveCommentsFile(comments, sha);
+    } catch(err){ alert('اضافه نشد: ' + err.message); return; }
+    document.getElementById('acName').value = '';
+    document.getElementById('acText').value = '';
+    loadComments();
+  }
+
+  async function saveReply(id, replyText){
+    try{
+      const { comments, sha } = await fetchCommentsFile();
+      const c = comments.find(x => x.id === id);
+      if(c) c.reply = replyText;
+      await saveCommentsFile(comments, sha);
+    } catch(err){ alert('ذخیره نشد: ' + err.message); return; }
+    loadComments();
+  }
+
+  async function deleteComment(id){
+    if(!confirm('این نظر حذف بشه؟')) return;
+    try{
+      const { comments, sha } = await fetchCommentsFile();
+      const filtered = comments.filter(x => x.id !== id);
+      await saveCommentsFile(filtered, sha);
+    } catch(err){ alert('حذف نشد: ' + err.message); return; }
+    loadComments();
   }
 </script>
 
