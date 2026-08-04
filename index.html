@@ -1357,13 +1357,13 @@
       slotSelect.style.cssText = 'width:100%;margin-top:8px;background:var(--bg-soft);border:1px solid var(--line);color:var(--fg);font-family:JetBrains Mono,monospace;font-size:11px;padding:6px;border-radius:4px;';
       const noneOpt = document.createElement('option');
       noneOpt.value = '';
-      noneOpt.textContent = 'نمایش بالای صفحه: خاموش';
+      noneOpt.textContent = 'Off';
       if(!c.slot) noneOpt.selected = true;
       slotSelect.appendChild(noneOpt);
       Object.keys(SLOT_LABELS).forEach(s => {
         const opt = document.createElement('option');
         opt.value = s;
-        opt.textContent = 'بالای صفحه: ' + SLOT_LABELS[s];
+        opt.textContent = 'Up ' + SLOT_LABELS[s];
         if(c.slot === s) opt.selected = true;
         slotSelect.appendChild(opt);
       });
@@ -1371,7 +1371,7 @@
 
       const delBtn = document.createElement('button');
       delBtn.className = 'gh-del';
-      delBtn.textContent = 'حذف این نظر ✕';
+      delBtn.textContent = 'Delete Comment ✕';
       delBtn.addEventListener('click', () => deleteComment(c.id));
 
       card.appendChild(replyBox);
