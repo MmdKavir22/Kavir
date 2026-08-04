@@ -463,65 +463,84 @@
 
   /* ---------- LIKE BUTTON ---------- */
   .like-wrap{
-    display:flex; flex-direction:column; align-items:center; gap:8px;
-    margin:36px auto 0; position:relative; z-index:3; width:fit-content;
+    display:flex; flex-direction:row; align-items:center; gap:10px;
+    margin:22px auto 0; position:relative; z-index:3; width:fit-content;
   }
   .like-btn{
-    width:56px; height:56px; border-radius:50%;
+    width:38px; height:38px; border-radius:50%;
     background:var(--bg-soft); border:1px solid var(--line);
     color:var(--fg-dim); cursor:pointer;
     display:flex; align-items:center; justify-content:center;
     transition:all .2s ease;
   }
-  .like-btn svg{width:22px; height:22px;}
+  .like-btn svg{width:15px; height:15px;}
   .like-btn:hover{border-color:var(--white); color:var(--white); transform:scale(1.05);}
   .like-btn.liked{background:var(--white); color:#000; border-color:var(--white);}
-  .like-count{font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--fg-dim); letter-spacing:.05em;}
+  .like-count{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--fg-dim); letter-spacing:.05em;}
 
   /* ---------- COMMENTS SECTION ---------- */
   .comments-wrap{
-    position:relative; z-index:3; max-width:720px; margin:70px auto 90px; padding:0 24px;
+    position:relative; z-index:3; max-width:640px; margin:60px auto 80px; padding:0 24px;
   }
   .comment-form{
     background:var(--panel); border:1px solid var(--line); border-radius:8px;
-    padding:24px; margin-bottom:28px;
+    padding:18px; margin-bottom:22px;
   }
   .comment-form input[type=text], .comment-form textarea{
     width:100%; background:var(--bg-soft); border:1px solid var(--line); color:var(--fg);
-    font-family:'Vazirmatn','JetBrains Mono',monospace; font-size:14px; padding:12px;
-    border-radius:6px; margin-bottom:10px;
+    font-family:'Vazirmatn','JetBrains Mono',monospace; font-size:13px; padding:9px;
+    border-radius:6px; margin-bottom:8px;
   }
-  .comment-form textarea{min-height:90px; resize:vertical;}
+  .comment-form textarea{min-height:70px; resize:vertical;}
   .comment-checkbox{
-    display:flex; align-items:center; gap:8px; margin-bottom:14px;
-    font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--fg-dim);
+    display:flex; align-items:center; gap:8px; margin-bottom:10px;
+    font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--fg-dim);
   }
   .comment-checkbox input{width:auto; margin:0;}
-  #commentStatus{display:block; margin-top:8px; font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--fg-dimmer);}
+  #commentStatus{display:block; margin-top:6px; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--fg-dimmer);}
 
   .comment-card{
     border:1px solid var(--line); background:var(--bg-soft); border-radius:6px;
-    padding:16px 18px; margin-bottom:14px;
+    padding:10px 12px; margin-bottom:8px;
   }
-  .comment-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;}
-  .comment-name{font-weight:700; font-size:14px; color:var(--white);}
+  .comment-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;}
+  .comment-name{font-weight:700; font-size:12px; color:var(--white);}
   .comment-like-btn{
-    display:flex; align-items:center; gap:6px; background:none; border:1px solid var(--line);
-    color:var(--fg-dim); font-family:'JetBrains Mono',monospace; font-size:11px;
-    padding:5px 10px; border-radius:20px; cursor:pointer;
+    display:flex; align-items:center; gap:4px; background:none; border:1px solid var(--line);
+    color:var(--fg-dim); font-family:'JetBrains Mono',monospace; font-size:9px;
+    padding:3px 8px; border-radius:20px; cursor:pointer;
   }
   .comment-like-btn:hover{border-color:var(--white); color:var(--white);}
-  .comment-like-btn svg{width:11px; height:11px;}
-  .comment-text{font-size:14px; line-height:1.9; color:var(--fg);}
+  .comment-like-btn svg{width:9px; height:9px;}
+  .comment-text{font-size:12px; line-height:1.7; color:var(--fg);}
   .comment-reply{
-    margin-top:12px; padding:12px 14px; border-inline-start:2px solid var(--line);
-    background:rgba(255,255,255,0.03); font-size:13px; line-height:1.8; color:var(--fg-dim);
+    margin-top:8px; padding:8px 10px; border-inline-start:2px solid var(--line);
+    background:rgba(255,255,255,0.03); font-size:11px; line-height:1.6; color:var(--fg-dim);
   }
   .comment-reply b{color:var(--white);}
 
+  .replied-heading{
+    font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--fg-dimmer); margin-bottom:8px;
+  }
+  .replied-grid{
+    display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:18px;
+  }
+  @media (max-width:520px){
+    .replied-grid{grid-template-columns:1fr;}
+  }
+
+  .admin-reply-box{
+    width:100%; background:var(--bg-soft); border:1px solid var(--line); color:var(--fg);
+    font-family:'JetBrains Mono',monospace; font-size:11px; padding:7px; border-radius:4px;
+    margin-top:8px; resize:none; overflow:hidden; line-height:1.5;
+  }
+  .comment-card .btn-primary{ font-size:10px; padding:6px 12px; margin-top:6px; }
+  .comment-card .gh-del{ font-size:11px; margin-top:6px; display:block; }
+
   /* admin comment moderation */
   .admin-comment-form{
-    background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:20px; margin-bottom:24px;
+    background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:16px; margin-bottom:20px;
   }
   .admin-comment-form textarea{
     width:100%; background:var(--bg-soft); border:1px solid var(--line); color:var(--fg);
@@ -536,6 +555,17 @@
   <h1 class="name">MmdKavir<span class="cursor">&nbsp;</span></h1>
   <div class="tagline">GAMER<span class="sep">/</span>DEVELOPER<span class="sep">/</span>19</div>
 </header>
+
+<!-- LIKE BUTTON -->
+<div class="like-wrap">
+  <button class="like-btn" id="likeBtn" onclick="handleLike()" title="Like">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M7 11h3v9H7a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2z"></path>
+      <path d="M10 11l2.5-6.5a1.8 1.8 0 0 1 3.3.3l.7 3.2h3.2a2 2 0 0 1 1.9 2.7l-2 6a2 2 0 0 1-1.9 1.3H10v-7z"></path>
+    </svg>
+  </button>
+  <span class="like-count" id="likeCount">—</span>
+</div>
 
 <main>
 
@@ -686,29 +716,18 @@
   </div>
 </div>
 
-<!-- LIKE BUTTON -->
-<div class="like-wrap">
-  <button class="like-btn" id="likeBtn" onclick="handleLike()" title="Like">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M7 11h3v9H7a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2z"></path>
-      <path d="M10 11l2.5-6.5a1.8 1.8 0 0 1 3.3.3l.7 3.2h3.2a2 2 0 0 1 1.9 2.7l-2 6a2 2 0 0 1-1.9 1.3H10v-7z"></path>
-    </svg>
-  </button>
-  <span class="like-count" id="likeCount">—</span>
-</div>
 
-<!-- COMMENTS -->
 <div class="comments-wrap">
   <div class="col-title">Comments</div>
 
   <div class="comment-form">
-    <input type="text" id="commentName" placeholder="اسمت">
-    <textarea id="commentText" placeholder="نظرت..."></textarea>
+    <input type="text" id="commentName" placeholder="Name">
+    <textarea id="commentText" placeholder="Your Comment"></textarea>
     <label class="comment-checkbox">
       <input type="checkbox" id="commentPublic" checked>
-      به بقیه هم نشون داده بشه (در صورت تایید من)
+      Public
     </label>
-    <button class="btn-primary" onclick="submitComment()">ارسال نظر</button>
+    <button class="btn-primary" onclick="submitComment()">Send</button>
     <small id="commentStatus"></small>
   </div>
 
@@ -716,10 +735,10 @@
     <input type="text" id="acName" placeholder="اسم">
     <textarea id="acText" placeholder="متن نظر"></textarea>
     <textarea id="acReply" placeholder="جواب من (اختیاری)"></textarea>
-    <button class="btn-primary" onclick="addPublicComment()">اضافه‌کردن به نظرات عمومی</button>
+    <button class="btn-primary" onclick="addPublicComment()">Add comment to public</button>
   </div>
 
-  <div id="commentList"><div class="empty-note">در حال بارگذاری...</div></div>
+  <div id="commentList"><div class="empty-note">Loading...</div></div>
 </div>
 
 <footer>
@@ -1183,6 +1202,74 @@
     if(!res.ok){ const j = await res.json(); throw new Error(j.message || 'خطا در ذخیره'); }
   }
 
+  function autosizeTextarea(el){
+    el.style.height = 'auto';
+    el.style.height = (el.scrollHeight + 2) + 'px';
+  }
+
+  function buildCommentCard(c){
+    const card = document.createElement('div');
+    card.className = 'comment-card';
+
+    const head = document.createElement('div');
+    head.className = 'comment-head';
+    const name = document.createElement('span');
+    name.className = 'comment-name';
+    name.textContent = c.name;
+
+    const likeBtn = document.createElement('button');
+    likeBtn.className = 'comment-like-btn';
+    likeBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 11h3v9H7a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2z"></path><path d="M10 11l2.5-6.5a1.8 1.8 0 0 1 3.3.3l.7 3.2h3.2a2 2 0 0 1 1.9 2.7l-2 6a2 2 0 0 1-1.9 1.3H10v-7z"></path></svg><span>0</span>';
+    likeBtn.addEventListener('click', () => likeCommentClick(c.id, likeBtn));
+
+    head.appendChild(name);
+    head.appendChild(likeBtn);
+    card.appendChild(head);
+
+    const text = document.createElement('div');
+    text.className = 'comment-text';
+    text.textContent = c.text;
+    card.appendChild(text);
+
+    if(c.reply){
+      const reply = document.createElement('div');
+      reply.className = 'comment-reply';
+      const b = document.createElement('b');
+      b.textContent = 'MmdKavir: ';
+      reply.appendChild(b);
+      reply.appendChild(document.createTextNode(c.reply));
+      card.appendChild(reply);
+    }
+
+    if(isAdmin){
+      const replyBox = document.createElement('textarea');
+      replyBox.className = 'admin-reply-box';
+      replyBox.placeholder = 'جواب بده...';
+      replyBox.value = c.reply || '';
+      replyBox.rows = 1;
+      replyBox.addEventListener('input', () => autosizeTextarea(replyBox));
+
+      const saveBtn = document.createElement('button');
+      saveBtn.className = 'btn-primary';
+      saveBtn.textContent = 'ذخیره جواب';
+      saveBtn.addEventListener('click', () => saveReply(c.id, replyBox.value));
+
+      const delBtn = document.createElement('button');
+      delBtn.className = 'gh-del';
+      delBtn.textContent = 'حذف این نظر ✕';
+      delBtn.addEventListener('click', () => deleteComment(c.id));
+
+      card.appendChild(replyBox);
+      card.appendChild(saveBtn);
+      card.appendChild(delBtn);
+
+      requestAnimationFrame(() => autosizeTextarea(replyBox));
+    }
+
+    loadCommentLikeCount(c.id, likeBtn);
+    return card;
+  }
+
   async function loadComments(){
     const list = document.getElementById('commentList');
     let comments = [];
@@ -1190,66 +1277,24 @@
     catch(err){ list.innerHTML = ''; list.appendChild(makeEmptyNote('خطا تو گرفتن نظرات')); return; }
     if(!comments.length){ list.innerHTML = ''; list.appendChild(makeEmptyNote('هنوز نظری ثبت نشده')); return; }
     list.innerHTML = '';
-    [...comments].reverse().forEach(c => {
-      const card = document.createElement('div');
-      card.className = 'comment-card';
 
-      const head = document.createElement('div');
-      head.className = 'comment-head';
-      const name = document.createElement('span');
-      name.className = 'comment-name';
-      name.textContent = c.name;
+    const ordered = [...comments].reverse();
+    const replied = ordered.filter(c => c.reply);
+    const rest = ordered.filter(c => !c.reply);
 
-      const likeBtn = document.createElement('button');
-      likeBtn.className = 'comment-like-btn';
-      likeBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 11h3v9H7a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2z"></path><path d="M10 11l2.5-6.5a1.8 1.8 0 0 1 3.3.3l.7 3.2h3.2a2 2 0 0 1 1.9 2.7l-2 6a2 2 0 0 1-1.9 1.3H10v-7z"></path></svg><span>0</span>';
-      likeBtn.addEventListener('click', () => likeCommentClick(c.id, likeBtn));
+    if(replied.length){
+      const heading = document.createElement('div');
+      heading.className = 'replied-heading';
+      heading.textContent = 'جواب دادم';
+      list.appendChild(heading);
 
-      head.appendChild(name);
-      head.appendChild(likeBtn);
-      card.appendChild(head);
+      const grid = document.createElement('div');
+      grid.className = 'replied-grid';
+      replied.forEach(c => grid.appendChild(buildCommentCard(c)));
+      list.appendChild(grid);
+    }
 
-      const text = document.createElement('div');
-      text.className = 'comment-text';
-      text.textContent = c.text;
-      card.appendChild(text);
-
-      if(c.reply){
-        const reply = document.createElement('div');
-        reply.className = 'comment-reply';
-        const b = document.createElement('b');
-        b.textContent = 'MmdKavir: ';
-        reply.appendChild(b);
-        reply.appendChild(document.createTextNode(c.reply));
-        card.appendChild(reply);
-      }
-
-      if(isAdmin){
-        const replyBox = document.createElement('textarea');
-        replyBox.placeholder = 'جواب بده...';
-        replyBox.value = c.reply || '';
-        replyBox.style.cssText = 'width:100%;margin-top:10px;background:var(--bg-soft);border:1px solid var(--line);color:var(--fg);font-family:JetBrains Mono,monospace;font-size:12px;padding:8px;border-radius:4px;min-height:50px;';
-        const saveBtn = document.createElement('button');
-        saveBtn.className = 'btn-primary';
-        saveBtn.style.marginTop = '6px';
-        saveBtn.textContent = 'ذخیره جواب';
-        saveBtn.addEventListener('click', () => saveReply(c.id, replyBox.value));
-
-        const delBtn = document.createElement('button');
-        delBtn.className = 'gh-del';
-        delBtn.style.marginTop = '6px';
-        delBtn.style.display = 'block';
-        delBtn.textContent = 'حذف این نظر ✕';
-        delBtn.addEventListener('click', () => deleteComment(c.id));
-
-        card.appendChild(replyBox);
-        card.appendChild(saveBtn);
-        card.appendChild(delBtn);
-      }
-
-      list.appendChild(card);
-      loadCommentLikeCount(c.id, likeBtn);
-    });
+    rest.forEach(c => list.appendChild(buildCommentCard(c)));
   }
 
   async function addPublicComment(){
