@@ -402,22 +402,21 @@
   }
   .modal-overlay.open{display:flex;}
   .modal-box{
-    background:linear-gradient(165deg, rgba(80,80,80,0.5), rgba(12,12,12,0.75));
-    -webkit-backdrop-filter: blur(22px) saturate(140%);
-    backdrop-filter: blur(22px) saturate(140%);
-    border:1px solid rgba(255,255,255,0.12);
-    box-shadow: 0 20px 60px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.08);
+    background:rgba(8,8,8,0.55);
+    -webkit-backdrop-filter: blur(22px) saturate(150%);
+    backdrop-filter: blur(22px) saturate(150%);
+    border:1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.05);
     width:100%; max-width:720px; max-height:85vh; overflow-y:auto;
     border-radius:14px;
-    color:var(--fg);
   }
   .modal-head{
     display:flex; justify-content:space-between; align-items:center;
-    padding:18px 22px; border-bottom:1px solid rgba(255,255,255,0.1);
+    padding:18px 22px; border-bottom:1px solid rgba(255,255,255,0.08);
     position:sticky; top:0;
-    background:rgba(6,6,6,0.78);
-    -webkit-backdrop-filter: blur(22px) saturate(140%);
-    backdrop-filter: blur(22px) saturate(140%);
+    background:rgba(8,8,8,0.5);
+    -webkit-backdrop-filter: blur(22px) saturate(150%);
+    backdrop-filter: blur(22px) saturate(150%);
     z-index:1;
   }
   .modal-head h3{
@@ -588,40 +587,6 @@
     width:100%; background:var(--bg-soft); border:1px solid var(--line); color:var(--fg);
     font-family:'JetBrains Mono',monospace; font-size:13px; padding:10px; border-radius:4px; margin-bottom:8px; min-height:60px;
   }
-
-  /* "more..." button under the comment list */
-  .more-comments-btn{
-    display:block;
-    margin:14px auto 0;
-    font-family:'JetBrains Mono',monospace;
-    font-size:12px;
-    letter-spacing:.05em;
-    padding:9px 22px;
-    background:var(--bg-soft);
-    border:1px solid var(--line);
-    color:var(--fg-dim);
-    border-radius:20px;
-    cursor:pointer;
-    transition:all .2s ease;
-  }
-  .more-comments-btn:hover{border-color:var(--white); color:var(--white);}
-
-  /* comments inside the "more" modal: smaller, two per row (one left, one right) */
-  .more-comments-grid{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:8px;
-    align-items:start;
-  }
-  @media (max-width:480px){
-    .more-comments-grid{grid-template-columns:1fr;}
-  }
-  .more-comments-grid .comment-card{padding:8px 9px; margin-bottom:0; font-size:11px;}
-  .more-comments-grid .comment-name{font-size:10.5px;}
-  .more-comments-grid .comment-text{font-size:10.5px; line-height:1.5;}
-  .more-comments-grid .comment-reply{font-size:9.5px; padding:6px 8px; margin-top:6px;}
-  .more-comments-grid .comment-like-btn{font-size:8px; padding:2px 6px; gap:3px;}
-  .more-comments-grid .comment-like-btn svg{width:8px; height:8px;}
 </style>
 </head>
 <body>
@@ -714,12 +679,8 @@
         <span>age</span>
       </div>
       <div class="stat">
-        <b>16/04</b>
-        <span>Birthday</span>
-      </div>
-      <div class="stat">
-        <b>04</b>
-        <span>Platforms</span>
+        <b id="birthdayCountdown">—</b>
+        <span>Until Birthday</span>
       </div>
     </div>
   </section>
@@ -803,24 +764,24 @@
   <div class="col-title">Comments</div>
 
   <div class="comment-form">
-    <input type="text" id="commentName" placeholder="Your Name">
-    <textarea id="commentText" placeholder="Your Comment"></textarea>
+    <input type="text" id="commentName" placeholder="اسمت">
+    <textarea id="commentText" placeholder="نظرت..."></textarea>
     <label class="comment-checkbox">
       <input type="checkbox" id="commentPublic" checked>
-      Public
+      به بقیه هم نشون داده بشه (در صورت تایید من)
     </label>
-    <button class="btn-primary" onclick="submitComment()">Send</button>
+    <button class="btn-primary" onclick="submitComment()">ارسال نظر</button>
     <small id="commentStatus"></small>
   </div>
 
   <div id="adminCommentForm" class="admin-comment-form" style="display:none;">
-    <input type="text" id="acName" placeholder="Name">
-    <textarea id="acText" placeholder="comment"></textarea>
-    <textarea id="acReply" placeholder="Replay"></textarea>
-    <button class="btn-primary" onclick="addPublicComment()">Add Comment to public</button>
+    <input type="text" id="acName" placeholder="اسم">
+    <textarea id="acText" placeholder="متن نظر"></textarea>
+    <textarea id="acReply" placeholder="جواب من (اختیاری)"></textarea>
+    <button class="btn-primary" onclick="addPublicComment()">اضافه‌کردن به نظرات عمومی</button>
   </div>
 
-  <div id="commentList"><div class="empty-note">Loading</div></div>
+  <div id="commentList"><div class="empty-note">در حال بارگذاری...</div></div>
 </div>
 
 <footer>
@@ -872,19 +833,6 @@
         <button class="btn-primary" onclick="addGame()">Add Game</button>
       </div>
       <ul id="gameList" class="gh-list"><li class="empty-note">در حال بارگذاری...</li></ul>
-    </div>
-  </div>
-</div>
-
-<!-- MORE COMMENTS MODAL -->
-<div class="modal-overlay" id="moreCommentsModal" onclick="if(event.target===this) closeModal('moreCommentsModal')">
-  <div class="modal-box">
-    <div class="modal-head">
-      <h3>Comments</h3>
-      <button class="modal-close" onclick="closeModal('moreCommentsModal')">✕</button>
-    </div>
-    <div class="modal-body">
-      <div id="moreCommentsBody"></div>
     </div>
   </div>
 </div>
@@ -942,7 +890,6 @@
       closeLightbox();
       closeModal('albumModal');
       closeModal('ghModal');
-      closeModal('moreCommentsModal');
     }
   });
 
@@ -1236,6 +1183,35 @@
     } catch(e){ /* silently ignore */ }
   }
 
+  // ---------- BIRTHDAY COUNTDOWN (April 16, live: days/hours/minutes/seconds) ----------
+  function updateBirthdayCountdown(){
+    const el = document.getElementById('birthdayCountdown');
+    if(!el) return;
+    const now = new Date();
+    if(now.getMonth() === 3 && now.getDate() === 16){
+      el.style.direction = 'ltr';
+      el.style.unicodeBidi = 'isolate';
+      el.textContent = '🎂 Today';
+      return;
+    }
+    let next = new Date(now.getFullYear(), 3, 16, 0, 0, 0, 0);
+    if(next < now){ next = new Date(now.getFullYear() + 1, 3, 16, 0, 0, 0, 0); }
+    const totalSeconds = Math.floor((next - now) / 1000);
+    const days = Math.floor(totalSeconds / (3600 * 24));
+    const hours = Math.floor((totalSeconds % (3600 * 24)) / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    el.style.direction = 'ltr';
+    el.style.unicodeBidi = 'isolate';
+    el.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+  }
+  (function initBirthdayCountdown(){
+    const el = document.getElementById('birthdayCountdown');
+    if(el){ el.style.fontSize = '34px'; el.style.whiteSpace = 'nowrap'; }
+    updateBirthdayCountdown();
+    setInterval(updateBirthdayCountdown, 1000);
+  })();
+
   (function initLike(){
     loadLikeCount();
     if(localStorage.getItem('hasLiked') === '1'){
@@ -1303,7 +1279,7 @@
     el.style.height = (el.scrollHeight + 2) + 'px';
   }
 
-  const SLOT_LABELS = { L1:'Left 1', L2:'Left 2', L3:'Left 3', L4:'Left 4', R1:'Right 1', R2:'Right 2', R3:'Right 3', R4:'Right 4' };
+  const SLOT_LABELS = { L1:'چپ ۱', L2:'چپ ۲', L3:'چپ ۳', L4:'چپ ۴', R1:'راست ۱', R2:'راست ۲', R3:'راست ۳', R4:'راست ۴' };
 
   function buildCommentCard(c){
     const card = document.createElement('div');
@@ -1356,13 +1332,13 @@
       slotSelect.style.cssText = 'width:100%;margin-top:8px;background:var(--bg-soft);border:1px solid var(--line);color:var(--fg);font-family:JetBrains Mono,monospace;font-size:11px;padding:6px;border-radius:4px;';
       const noneOpt = document.createElement('option');
       noneOpt.value = '';
-      noneOpt.textContent = 'Off';
+      noneOpt.textContent = 'نمایش بالای صفحه: خاموش';
       if(!c.slot) noneOpt.selected = true;
       slotSelect.appendChild(noneOpt);
       Object.keys(SLOT_LABELS).forEach(s => {
         const opt = document.createElement('option');
         opt.value = s;
-        opt.textContent = 'Up ' + SLOT_LABELS[s];
+        opt.textContent = 'بالای صفحه: ' + SLOT_LABELS[s];
         if(c.slot === s) opt.selected = true;
         slotSelect.appendChild(opt);
       });
@@ -1370,7 +1346,7 @@
 
       const delBtn = document.createElement('button');
       delBtn.className = 'gh-del';
-      delBtn.textContent = 'Delete ✕';
+      delBtn.textContent = 'حذف این نظر ✕';
       delBtn.addEventListener('click', () => deleteComment(c.id));
 
       card.appendChild(replyBox);
@@ -1424,35 +1400,6 @@
     loadComments();
   }
 
-  function renderCommentGroups(container, ordered){
-    const replied = ordered.filter(c => c.reply);
-    const rest = ordered.filter(c => !c.reply);
-
-    if(replied.length){
-      const heading = document.createElement('div');
-      heading.className = 'replied-heading';
-      heading.textContent = 'جواب دادم';
-      container.appendChild(heading);
-
-      const grid = document.createElement('div');
-      grid.className = 'replied-grid';
-      replied.forEach(c => grid.appendChild(buildCommentCard(c)));
-      container.appendChild(grid);
-    }
-
-    rest.forEach(c => container.appendChild(buildCommentCard(c)));
-  }
-
-  function openMoreComments(allComments){
-    const body = document.getElementById('moreCommentsBody');
-    body.innerHTML = '';
-    const grid = document.createElement('div');
-    grid.className = 'more-comments-grid';
-    allComments.forEach(c => grid.appendChild(buildCommentCard(c)));
-    body.appendChild(grid);
-    openModal('moreCommentsModal');
-  }
-
   async function loadComments(){
     const list = document.getElementById('commentList');
     let comments = [];
@@ -1462,33 +1409,23 @@
     if(!comments.length){ list.innerHTML = ''; list.appendChild(makeEmptyNote('هنوز نظری ثبت نشده')); return; }
     list.innerHTML = '';
 
-    // regular visitors shouldn't see a comment twice: once it's shown up top (a slot), hide it from the list below.
-    // admin still sees everything here so moderation (reply/slot/delete) stays possible for every comment.
-    const visible = isAdmin ? comments : comments.filter(c => !c.slot);
-    if(!visible.length){
-      list.appendChild(makeEmptyNote(isAdmin ? 'هنوز نظری ثبت نشده' : 'همه‌ی نظرا بالای صفحه نشون داده شدن'));
-      return;
+    const ordered = [...comments].reverse();
+    const replied = ordered.filter(c => c.reply);
+    const rest = ordered.filter(c => !c.reply);
+
+    if(replied.length){
+      const heading = document.createElement('div');
+      heading.className = 'replied-heading';
+      heading.textContent = 'جواب دادم';
+      list.appendChild(heading);
+
+      const grid = document.createElement('div');
+      grid.className = 'replied-grid';
+      replied.forEach(c => grid.appendChild(buildCommentCard(c)));
+      list.appendChild(grid);
     }
 
-    const ordered = [...visible].reverse();
-
-    // cap the list at 2 comments for regular visitors; the rest live behind a "more..." button/modal
-    let shown = ordered;
-    let hidden = [];
-    if(!isAdmin && ordered.length > 2){
-      shown = ordered.slice(0, 2);
-      hidden = ordered.slice(2);
-    }
-
-    renderCommentGroups(list, shown);
-
-    if(hidden.length){
-      const moreBtn = document.createElement('button');
-      moreBtn.className = 'more-comments-btn';
-      moreBtn.textContent = 'more...';
-      moreBtn.addEventListener('click', () => openMoreComments(ordered));
-      list.appendChild(moreBtn);
-    }
+    rest.forEach(c => list.appendChild(buildCommentCard(c)));
   }
 
   async function addPublicComment(){
