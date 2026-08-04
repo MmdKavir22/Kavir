@@ -402,30 +402,49 @@
   }
   .modal-overlay.open{display:flex;}
   .modal-box{
-    background:rgba(8,8,8,0.55);
+    background:rgba(255,255,255,0.68);
     -webkit-backdrop-filter: blur(22px) saturate(150%);
     backdrop-filter: blur(22px) saturate(150%);
-    border:1px solid rgba(255,255,255,0.1);
-    box-shadow: 0 20px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.05);
+    border:1px solid rgba(0,0,0,0.08);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.6);
     width:100%; max-width:720px; max-height:85vh; overflow-y:auto;
     border-radius:14px;
+    color:#141414;
+    /* re-theme every element inside the glass modal for a light background */
+    --bg-soft: rgba(0,0,0,0.045);
+    --panel: rgba(0,0,0,0.03);
+    --line: rgba(0,0,0,0.14);
+    --line-soft: rgba(0,0,0,0.08);
+    --fg: #1a1a1a;
+    --fg-dim: #55565c;
+    --fg-dimmer: #82838a;
   }
   .modal-head{
     display:flex; justify-content:space-between; align-items:center;
-    padding:18px 22px; border-bottom:1px solid rgba(255,255,255,0.08);
+    padding:18px 22px; border-bottom:1px solid rgba(0,0,0,0.08);
     position:sticky; top:0;
-    background:rgba(8,8,8,0.5);
+    background:rgba(255,255,255,0.55);
     -webkit-backdrop-filter: blur(22px) saturate(150%);
     backdrop-filter: blur(22px) saturate(150%);
     z-index:1;
   }
   .modal-head h3{
     font-family:'JetBrains Mono',monospace; font-size:14px;
-    letter-spacing:.08em; color:var(--white); font-weight:700;
+    letter-spacing:.08em; color:#101010; font-weight:700;
   }
   .modal-close{background:none; border:none; color:var(--fg-dim); font-size:20px; cursor:pointer; line-height:1;}
-  .modal-close:hover{color:var(--white);}
+  .modal-close:hover{color:#000;}
   .modal-body{padding:22px;}
+
+  /* fixes for elements that hardcode a "white on dark" look, now sitting on light glass */
+  .modal-box .comment-name{color:#101010;}
+  .modal-box .comment-reply{background:rgba(0,0,0,0.04);}
+  .modal-box .comment-reply b{color:#101010;}
+  .modal-box .comment-like-btn:hover{border-color:#101010; color:#101010;}
+  .modal-box .btn-primary{border:1px solid rgba(0,0,0,0.15);}
+  .modal-box .gh-del:hover{color:#000;}
+  .modal-box .badge.completed{border:1px solid rgba(0,0,0,0.15);}
+  .modal-box .badge.in_progress{border-color:#101010; color:#101010;}
 
   .add-form{margin-bottom:20px; padding-bottom:20px; border-bottom:1px dashed var(--line);}
   .add-form textarea, .add-form input[type=text], .add-form input[type=password], .add-form select{
@@ -587,6 +606,23 @@
     width:100%; background:var(--bg-soft); border:1px solid var(--line); color:var(--fg);
     font-family:'JetBrains Mono',monospace; font-size:13px; padding:10px; border-radius:4px; margin-bottom:8px; min-height:60px;
   }
+
+  /* "more..." button under the comment list */
+  .more-comments-btn{
+    display:block;
+    margin:14px auto 0;
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    letter-spacing:.05em;
+    padding:9px 22px;
+    background:var(--bg-soft);
+    border:1px solid var(--line);
+    color:var(--fg-dim);
+    border-radius:20px;
+    cursor:pointer;
+    transition:all .2s ease;
+  }
+  .more-comments-btn:hover{border-color:var(--white); color:var(--white);}
 </style>
 </head>
 <body>
@@ -841,6 +877,19 @@
   </div>
 </div>
 
+<!-- MORE COMMENTS MODAL -->
+<div class="modal-overlay" id="moreCommentsModal" onclick="if(event.target===this) closeModal('moreCommentsModal')">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3>Comments</h3>
+      <button class="modal-close" onclick="closeModal('moreCommentsModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="moreCommentsBody"></div>
+    </div>
+  </div>
+</div>
+
 <!-- LIGHTBOX -->
 <div class="lightbox" id="lightbox" onclick="if(event.target===this) closeLightbox()">
   <button class="lightbox-close" onclick="closeLightbox()">✕</button>
@@ -894,6 +943,7 @@
       closeLightbox();
       closeModal('albumModal');
       closeModal('ghModal');
+      closeModal('moreCommentsModal');
     }
   });
 
@@ -1375,6 +1425,32 @@
     loadComments();
   }
 
+  function renderCommentGroups(container, ordered){
+    const replied = ordered.filter(c => c.reply);
+    const rest = ordered.filter(c => !c.reply);
+
+    if(replied.length){
+      const heading = document.createElement('div');
+      heading.className = 'replied-heading';
+      heading.textContent = 'جواب دادم';
+      container.appendChild(heading);
+
+      const grid = document.createElement('div');
+      grid.className = 'replied-grid';
+      replied.forEach(c => grid.appendChild(buildCommentCard(c)));
+      container.appendChild(grid);
+    }
+
+    rest.forEach(c => container.appendChild(buildCommentCard(c)));
+  }
+
+  function openMoreComments(hiddenComments){
+    const body = document.getElementById('moreCommentsBody');
+    body.innerHTML = '';
+    renderCommentGroups(body, hiddenComments);
+    openModal('moreCommentsModal');
+  }
+
   async function loadComments(){
     const list = document.getElementById('commentList');
     let comments = [];
@@ -1384,23 +1460,33 @@
     if(!comments.length){ list.innerHTML = ''; list.appendChild(makeEmptyNote('هنوز نظری ثبت نشده')); return; }
     list.innerHTML = '';
 
-    const ordered = [...comments].reverse();
-    const replied = ordered.filter(c => c.reply);
-    const rest = ordered.filter(c => !c.reply);
-
-    if(replied.length){
-      const heading = document.createElement('div');
-      heading.className = 'replied-heading';
-      heading.textContent = 'جواب دادم';
-      list.appendChild(heading);
-
-      const grid = document.createElement('div');
-      grid.className = 'replied-grid';
-      replied.forEach(c => grid.appendChild(buildCommentCard(c)));
-      list.appendChild(grid);
+    // regular visitors shouldn't see a comment twice: once it's shown up top (a slot), hide it from the list below.
+    // admin still sees everything here so moderation (reply/slot/delete) stays possible for every comment.
+    const visible = isAdmin ? comments : comments.filter(c => !c.slot);
+    if(!visible.length){
+      list.appendChild(makeEmptyNote(isAdmin ? 'هنوز نظری ثبت نشده' : 'همه‌ی نظرا بالای صفحه نشون داده شدن'));
+      return;
     }
 
-    rest.forEach(c => list.appendChild(buildCommentCard(c)));
+    const ordered = [...visible].reverse();
+
+    // cap the list at 2 comments for regular visitors; the rest live behind a "more..." button/modal
+    let shown = ordered;
+    let hidden = [];
+    if(!isAdmin && ordered.length > 2){
+      shown = ordered.slice(0, 2);
+      hidden = ordered.slice(2);
+    }
+
+    renderCommentGroups(list, shown);
+
+    if(hidden.length){
+      const moreBtn = document.createElement('button');
+      moreBtn.className = 'more-comments-btn';
+      moreBtn.textContent = 'more...';
+      moreBtn.addEventListener('click', () => openMoreComments(hidden));
+      list.appendChild(moreBtn);
+    }
   }
 
   async function addPublicComment(){
