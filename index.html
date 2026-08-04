@@ -605,6 +605,23 @@
     transition:all .2s ease;
   }
   .more-comments-btn:hover{border-color:var(--white); color:var(--white);}
+
+  /* comments inside the "more" modal: smaller, two per row (one left, one right) */
+  .more-comments-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    align-items:start;
+  }
+  @media (max-width:480px){
+    .more-comments-grid{grid-template-columns:1fr;}
+  }
+  .more-comments-grid .comment-card{padding:8px 9px; margin-bottom:0; font-size:11px;}
+  .more-comments-grid .comment-name{font-size:10.5px;}
+  .more-comments-grid .comment-text{font-size:10.5px; line-height:1.5;}
+  .more-comments-grid .comment-reply{font-size:9.5px; padding:6px 8px; margin-top:6px;}
+  .more-comments-grid .comment-like-btn{font-size:8px; padding:2px 6px; gap:3px;}
+  .more-comments-grid .comment-like-btn svg{width:8px; height:8px;}
 </style>
 </head>
 <body>
@@ -1426,10 +1443,13 @@
     rest.forEach(c => container.appendChild(buildCommentCard(c)));
   }
 
-  function openMoreComments(hiddenComments){
+  function openMoreComments(allComments){
     const body = document.getElementById('moreCommentsBody');
     body.innerHTML = '';
-    renderCommentGroups(body, hiddenComments);
+    const grid = document.createElement('div');
+    grid.className = 'more-comments-grid';
+    allComments.forEach(c => grid.appendChild(buildCommentCard(c)));
+    body.appendChild(grid);
     openModal('moreCommentsModal');
   }
 
@@ -1466,7 +1486,7 @@
       const moreBtn = document.createElement('button');
       moreBtn.className = 'more-comments-btn';
       moreBtn.textContent = 'more...';
-      moreBtn.addEventListener('click', () => openMoreComments(hidden));
+      moreBtn.addEventListener('click', () => openMoreComments(ordered));
       list.appendChild(moreBtn);
     }
   }
