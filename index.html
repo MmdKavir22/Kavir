@@ -402,49 +402,31 @@
   }
   .modal-overlay.open{display:flex;}
   .modal-box{
-    background:rgba(255,255,255,0.68);
-    -webkit-backdrop-filter: blur(22px) saturate(150%);
-    backdrop-filter: blur(22px) saturate(150%);
-    border:1px solid rgba(0,0,0,0.08);
-    box-shadow: 0 20px 60px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.6);
+    background:linear-gradient(165deg, rgba(80,80,80,0.5), rgba(12,12,12,0.75));
+    -webkit-backdrop-filter: blur(22px) saturate(140%);
+    backdrop-filter: blur(22px) saturate(140%);
+    border:1px solid rgba(255,255,255,0.12);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.08);
     width:100%; max-width:720px; max-height:85vh; overflow-y:auto;
     border-radius:14px;
-    color:#141414;
-    /* re-theme every element inside the glass modal for a light background */
-    --bg-soft: rgba(0,0,0,0.045);
-    --panel: rgba(0,0,0,0.03);
-    --line: rgba(0,0,0,0.14);
-    --line-soft: rgba(0,0,0,0.08);
-    --fg: #1a1a1a;
-    --fg-dim: #55565c;
-    --fg-dimmer: #82838a;
+    color:var(--fg);
   }
   .modal-head{
     display:flex; justify-content:space-between; align-items:center;
-    padding:18px 22px; border-bottom:1px solid rgba(0,0,0,0.08);
+    padding:18px 22px; border-bottom:1px solid rgba(255,255,255,0.1);
     position:sticky; top:0;
-    background:rgba(255,255,255,0.55);
-    -webkit-backdrop-filter: blur(22px) saturate(150%);
-    backdrop-filter: blur(22px) saturate(150%);
+    background:rgba(6,6,6,0.78);
+    -webkit-backdrop-filter: blur(22px) saturate(140%);
+    backdrop-filter: blur(22px) saturate(140%);
     z-index:1;
   }
   .modal-head h3{
     font-family:'JetBrains Mono',monospace; font-size:14px;
-    letter-spacing:.08em; color:#101010; font-weight:700;
+    letter-spacing:.08em; color:var(--white); font-weight:700;
   }
   .modal-close{background:none; border:none; color:var(--fg-dim); font-size:20px; cursor:pointer; line-height:1;}
-  .modal-close:hover{color:#000;}
+  .modal-close:hover{color:var(--white);}
   .modal-body{padding:22px;}
-
-  /* fixes for elements that hardcode a "white on dark" look, now sitting on light glass */
-  .modal-box .comment-name{color:#101010;}
-  .modal-box .comment-reply{background:rgba(0,0,0,0.04);}
-  .modal-box .comment-reply b{color:#101010;}
-  .modal-box .comment-like-btn:hover{border-color:#101010; color:#101010;}
-  .modal-box .btn-primary{border:1px solid rgba(0,0,0,0.15);}
-  .modal-box .gh-del:hover{color:#000;}
-  .modal-box .badge.completed{border:1px solid rgba(0,0,0,0.15);}
-  .modal-box .badge.in_progress{border-color:#101010; color:#101010;}
 
   .add-form{margin-bottom:20px; padding-bottom:20px; border-bottom:1px dashed var(--line);}
   .add-form textarea, .add-form input[type=text], .add-form input[type=password], .add-form select{
@@ -1304,7 +1286,7 @@
     el.style.height = (el.scrollHeight + 2) + 'px';
   }
 
-  const SLOT_LABELS = { L1:'Left1', L2:'Left 2', L3:'Left 3', L4:'Left 4', R1:'Right 1', R2:'Right 2', R3:'Right 3', R4:'Right 4' };
+  const SLOT_LABELS = { L1:'Left 1', L2:'Left 2', L3:'Left 3', L4:'Left 4', R1:'Right 1', R2:'Right 2', R3:'Right 3', R4:'Right 4' };
 
   function buildCommentCard(c){
     const card = document.createElement('div');
@@ -1371,7 +1353,7 @@
 
       const delBtn = document.createElement('button');
       delBtn.className = 'gh-del';
-      delBtn.textContent = 'Delete Comment ✕';
+      delBtn.textContent = 'Delete ✕';
       delBtn.addEventListener('click', () => deleteComment(c.id));
 
       card.appendChild(replyBox);
